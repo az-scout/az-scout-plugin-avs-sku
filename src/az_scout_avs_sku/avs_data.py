@@ -273,10 +273,7 @@ def get_avs_skus_for_region(
                 "technical": technical_data,
                 "generation_labels": generation_labels,
                 "price": {
-                    "found": any(
-                        (price_data or {}).get(mode) is not None
-                        for mode in PRICE_MODES
-                    ),
+                    "found": any((price_data or {}).get(mode) is not None for mode in PRICE_MODES),
                     "byol": byol,
                     **(price_data or {}),
                 },
