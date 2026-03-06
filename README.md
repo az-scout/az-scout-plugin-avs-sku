@@ -3,6 +3,7 @@
 az-scout plugin for Azure VMware Solution (AVS) SKU exploration.
 
 It adds:
+
 - an AVS SKU UI tab in az-scout,
 - a REST API route that returns technical SKU data and optional regional pricing,
 - an MCP tool for AI/chat workflows,
@@ -11,6 +12,7 @@ It adds:
 ## Plugin role
 
 This plugin helps compare AVS SKUs by combining:
+
 - **technical specs** (CPU, RAM, cores, architecture, vSAN) from upstream SKU metadata,
 - **regional retail pricing** (PAYG and reservation monthly equivalents),
 - **generation labels** (Generation 1 / Generation 2 when applicable by region).
@@ -19,12 +21,11 @@ This plugin helps compare AVS SKUs by combining:
 
 - **AVS SKU tab** (`AVS SKU`) with BYOL toggle and pricing display mode selector.
 - **Pricing scope selector**: public prices list, or selected subscription scope.
-- **Generation labels in UI** with legend and official docs links.
-- **Core context event integration** via `azscout:subscriptions-loaded`, `azscout:regions-loaded`, `azscout:region-changed`.
+- **AVS generation awareness**.
 - **Chat integration**:
-    - MCP tool: `avs_sku_tool`
-    - custom chat mode: `avs-sku-advisor`
-    - default-mode addendum for AV* SKU interpretation.
+  - MCP tool: `avs_sku_tool`
+  - custom chat mode: `avs-sku-advisor`
+  - default-mode addendum for AV* SKU interpretation.
 
 ## REST API
 
@@ -118,6 +119,9 @@ src/az_scout_avs_sku/
         ├── css/avs-sku.css
         ├── html/avs-sku-tab.html
         └── js/avs-sku-tab.js
+tests/
+├── test_routes.py
+└── test_tools.py
 ```
 
 ## Quality checks
