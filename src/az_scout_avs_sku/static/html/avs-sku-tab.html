@@ -1,0 +1,49 @@
+<div class="avs-sku-panel">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3 small" id="avs-sku-context">
+        <div class="form-check form-switch ms-auto mb-0">
+            <input class="form-check-input" type="checkbox" id="avs-sku-byol-toggle" checked>
+            <label class="form-check-label" for="avs-sku-byol-toggle">BYOL pricing</label>
+        </div>
+        <select class="form-select form-select-sm avs-sku-pricing-scope" id="avs-sku-pricing-scope">
+            <option value="public" selected>Use public prices list</option>
+        </select>
+        <select class="form-select form-select-sm avs-sku-price-mode" id="avs-sku-price-mode">
+            <option value="payg_hour">PAYG / Hour</option>
+            <option value="payg_month">PAYG / Month</option>
+            <option value="reservation_1y_month">1 Year reservation / Month</option>
+            <option value="reservation_3y_month">3 Years reservation / Month</option>
+            <option value="reservation_5y_month">5 Years reservation / Month</option>
+        </select>
+    </div>
+
+    <div class="avs-sku-status text-body-secondary small mb-3" id="avs-sku-status">
+        Select a region to display Azure VMware Solution SKUs.
+    </div>
+
+    <div class="avs-sku-grid" id="avs-sku-cards"></div>
+
+    <div class="avs-sku-legend avs-sku-hidden mt-3" id="avs-sku-legend">
+        <div class="avs-sku-legend-header small">
+            <strong>AVS Generation 2 regional availability</strong>
+            <span>
+                Official source:
+                <a href="https://learn.microsoft.com/en-us/azure/azure-vmware/native-introduction#regional-availability" target="_blank" rel="noopener noreferrer">Microsoft documentation</a>.
+                Plugin labels are indicative and may not reflect the latest regional availability changes.
+            </span>
+        </div>
+        <div class="avs-sku-legend-item small">
+            <span class="avs-sku-generation-badge avs-sku-generation-badge-gen1">Generation 1</span>
+            <span>
+                Uses ExpressRoute for network integration.
+                <a href="https://learn.microsoft.com/en-us/azure/azure-vmware/introduction#azure-vmware-solution-private-cloud-types" target="_blank" rel="noopener noreferrer">Learn more</a>
+            </span>
+        </div>
+        <div class="avs-sku-legend-item small">
+            <span class="avs-sku-generation-badge avs-sku-generation-badge-gen2">Generation 2</span>
+            <span>
+                Uses Azure vNet integration.
+                <a href="https://learn.microsoft.com/en-us/azure/azure-vmware/native-introduction" target="_blank" rel="noopener noreferrer">Learn more</a>
+            </span>
+        </div>
+    </div>
+</div>
