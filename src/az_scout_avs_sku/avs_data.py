@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import re
 from datetime import UTC, datetime, timedelta
-from typing import Any, cast
+from typing import Any
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+
+import requests
 
 from az_scout_avs_sku._log import logger
 
@@ -45,16 +45,17 @@ _prices_cache: dict[tuple[str, bool], tuple[datetime, dict[str, dict[str, Any]]]
 
 
 def _http_get_json(url: str) -> dict[str, Any] | list[Any]:
-    request = Request(url, headers={"User-Agent": "az-scout-plugin-avs-sku"})
-    with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:  # noqa: S310
-        payload = response.read().decode("utf-8")
-    parsed = json.loads(payload)
-    if isinstance(parsed, dict):
-        return cast(dict[str, Any], parsed)
-    if isinstance(parsed, list):
-        return parsed
-    msg = "Unexpected JSON payload type"
-    raise ValueError(msg)
+    resp = requests.get(
+        url,
+        timeout=REQUEST_TIMEOUT_SECONDS,
+        headers={"User-Agent": "az-scout-plugin-avs-sku"},
+    )
+    resp.raise_for_status()
+    parsed: dict[str, Any] | list[Any] = resp.json()
+    if not isinstance(parsed, (dict, list)):
+        msg = "Unexpected JSON payload type"
+        raise ValueError(msg)
+    return parsed
 
 
 def _is_cache_fresh(timestamp: datetime) -> bool:
