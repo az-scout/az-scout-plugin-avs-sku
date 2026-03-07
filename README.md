@@ -1,6 +1,6 @@
 # az-scout-plugin-avs-sku
 
-az-scout plugin for Azure VMware Solution (AVS) SKU exploration.
+[**az-scout**](https://azscout.vupti.me) plugin for Azure VMware Solution (AVS) SKU exploration.
 
 It adds:
 
