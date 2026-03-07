@@ -24,7 +24,11 @@ except PackageNotFoundError:
 
 
 class AvsSkuPlugin:
-    """Example az-scout plugin."""
+    """az-scout AVS SKU plugin.
+
+    Adds Azure VMware Solution (AVS) SKU exploration with regional
+    pricing, generation compatibility, and technical specifications.
+    """
 
     name = "avs-sku"
     version = __version__
