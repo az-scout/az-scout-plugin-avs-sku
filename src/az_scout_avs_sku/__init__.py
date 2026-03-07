@@ -13,7 +13,7 @@ from typing import Any
 from az_scout.plugin_api import ChatMode, TabDefinition, get_plugin_logger
 from fastapi import APIRouter
 
-logger = get_plugin_logger("example")
+logger = get_plugin_logger("avs-sku")
 
 _STATIC_DIR = Path(__file__).parent / "static"
 
