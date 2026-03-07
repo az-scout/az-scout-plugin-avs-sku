@@ -13,6 +13,11 @@
     border-radius: 0.5rem;
     background: var(--bs-body-bg);
     padding: 1rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.avs-sku-card-item:hover {
+    border-color: var(--bs-info);
 }
 
 .avs-sku-card-unavailable {
