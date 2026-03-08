@@ -8,7 +8,7 @@ from typing import Any
 from urllib.parse import urlencode
 
 import requests
-from az_scout.azure_api._auth import AZURE_MGMT_URL, _get_headers
+from az_scout.azure_api import AZURE_MGMT_URL, ArmNotFoundError, arm_get
 
 from az_scout_avs_sku._log import logger
 
@@ -148,11 +148,10 @@ def _fetch_subscription_price_sheet(
 ) -> dict[str, float]:
     """Fetch AVS meter prices from the Consumption Price Sheet API.
 
-    Uses az-scout's ``_get_headers`` to obtain a Bearer token for the
-    connected identity.  Returns a mapping of ``meterId`` (lowercase) to
-    ``unitPrice`` for AVS-related meters only.
+    Uses az-scout's ``arm_get`` to make authenticated ARM calls with
+    built-in retry and error handling.  Returns a mapping of
+    ``meterId`` (lowercase) to ``unitPrice`` for AVS-related meters only.
     """
-    headers = _get_headers()
     url: str | None = (
         f"{AZURE_MGMT_URL}/subscriptions/{subscription_id}"
         f"/providers/Microsoft.Consumption/pricesheets/default"
@@ -161,16 +160,15 @@ def _fetch_subscription_price_sheet(
     meter_prices: dict[str, float] = {}
 
     while url:
-        resp = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT_SECONDS)
-        if resp.status_code == 404:
+        try:
+            data = arm_get(url, timeout=REQUEST_TIMEOUT_SECONDS)
+        except ArmNotFoundError:
             msg = (
                 f"Subscription price sheet not available for subscription "
                 f"'{subscription_id}'. This API requires an Enterprise Agreement (EA) "
                 f"or Microsoft Customer Agreement (MCA) billing account."
             )
-            raise ValueError(msg)
-        resp.raise_for_status()
-        data = resp.json()
+            raise ValueError(msg)  # noqa: B904
         properties = data.get("properties", {})
         pricesheets = properties.get("pricesheets", [])
 

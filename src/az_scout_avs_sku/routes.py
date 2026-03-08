@@ -1,21 +1,21 @@
 """API routes for AVS SKU and pricing data."""
 
+from az_scout.plugin_api import PluginUpstreamError, PluginValidationError
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
 from az_scout_avs_sku.avs_data import get_avs_skus_for_region
 
 router = APIRouter()
 
 
-@router.get("/skus", response_model=None)
+@router.get("/skus")
 async def skus(
     region: str = "",
     byol: bool = True,
     sku: str = "",
     pricing_source: str = "public",
     subscription_id: str = "",
-) -> dict[str, object] | JSONResponse:
+) -> dict[str, object]:
     """Return AVS SKUs with technical data and optional regional pricing."""
     normalized_region = region.strip().lower()
     normalized_sku = sku.strip()
@@ -31,14 +31,8 @@ async def skus(
             subscription_id=normalized_subscription_id,
         )
     except ValueError as exc:
-        message = f"Failed to load AVS SKU data for region '{normalized_region}': {exc}"
-        return JSONResponse(
-            status_code=422,
-            content={"error": message, "detail": message},
-        )
+        raise PluginValidationError(str(exc)) from exc
     except Exception as exc:  # noqa: BLE001
-        message = f"Failed to load AVS SKU data for region '{normalized_region}': {exc}"
-        return JSONResponse(
-            status_code=502,
-            content={"error": message, "detail": message},
-        )
+        raise PluginUpstreamError(
+            f"Failed to load AVS SKU data for region '{normalized_region}': {exc}"
+        ) from exc

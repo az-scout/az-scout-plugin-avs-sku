@@ -68,16 +68,11 @@ def _make_pricesheet_item(
 # ---------------------------------------------------------------------------
 
 
-@patch("az_scout_avs_sku.avs_data._get_headers", return_value={"Authorization": "Bearer tok"})
-@patch("az_scout_avs_sku.avs_data.requests.get")
+@patch("az_scout_avs_sku.avs_data.arm_get")
 def test_fetch_subscription_price_sheet_returns_avs_meters(
-    mock_get: MagicMock,
-    _mock_headers: MagicMock,
+    mock_arm_get: MagicMock,
 ) -> None:
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_resp.raise_for_status = MagicMock()
-    mock_resp.json.return_value = {
+    mock_arm_get.return_value = {
         "properties": {
             "pricesheets": [
                 _make_pricesheet_item(meter_id="aaa", unit_price=8.5),
@@ -91,57 +86,44 @@ def test_fetch_subscription_price_sheet_returns_avs_meters(
             "nextLink": None,
         },
     }
-    mock_get.return_value = mock_resp
 
     result = _fetch_subscription_price_sheet("sub-123")
 
     assert result == {"aaa": 8.5}
-    _mock_headers.assert_called_once()
+    mock_arm_get.assert_called_once()
 
 
-@patch("az_scout_avs_sku.avs_data._get_headers", return_value={"Authorization": "Bearer tok"})
-@patch("az_scout_avs_sku.avs_data.requests.get")
+@patch("az_scout_avs_sku.avs_data.arm_get")
 def test_fetch_subscription_price_sheet_follows_pagination(
-    mock_get: MagicMock,
-    _mock_headers: MagicMock,
+    mock_arm_get: MagicMock,
 ) -> None:
-    page1 = MagicMock()
-    page1.status_code = 200
-    page1.raise_for_status = MagicMock()
-    page1.json.return_value = {
+    page1 = {
         "properties": {
             "pricesheets": [_make_pricesheet_item(meter_id="m1", unit_price=5.0)],
             "nextLink": "https://next-page",
         },
     }
-
-    page2 = MagicMock()
-    page2.status_code = 200
-    page2.raise_for_status = MagicMock()
-    page2.json.return_value = {
+    page2 = {
         "properties": {
             "pricesheets": [_make_pricesheet_item(meter_id="m2", unit_price=6.0)],
             "nextLink": None,
         },
     }
-
-    mock_get.side_effect = [page1, page2]
+    mock_arm_get.side_effect = [page1, page2]
 
     result = _fetch_subscription_price_sheet("sub-456")
 
     assert result == {"m1": 5.0, "m2": 6.0}
-    assert mock_get.call_count == 2
+    assert mock_arm_get.call_count == 2
 
 
-@patch("az_scout_avs_sku.avs_data._get_headers", return_value={"Authorization": "Bearer tok"})
-@patch("az_scout_avs_sku.avs_data.requests.get")
+@patch("az_scout_avs_sku.avs_data.arm_get")
 def test_fetch_subscription_price_sheet_raises_on_404(
-    mock_get: MagicMock,
-    _mock_headers: MagicMock,
+    mock_arm_get: MagicMock,
 ) -> None:
-    mock_resp = MagicMock()
-    mock_resp.status_code = 404
-    mock_get.return_value = mock_resp
+    from az_scout.azure_api import ArmNotFoundError
+
+    mock_arm_get.side_effect = ArmNotFoundError("Not found")
 
     with pytest.raises(ValueError, match="Enterprise Agreement"):
         _fetch_subscription_price_sheet("sub-no-ea")

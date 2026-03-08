@@ -1,7 +1,7 @@
-"""az-scout example plugin.
+"""az-scout AVS SKU plugin.
 
-This is a minimal plugin scaffold. Customise the class below
-to add your own routes, MCP tools, UI tabs, and chat modes.
+Adds Azure VMware Solution (AVS) SKU exploration with regional
+pricing, generation compatibility, and technical specifications.
 """
 
 from collections.abc import Callable
