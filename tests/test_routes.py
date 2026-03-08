@@ -1,6 +1,9 @@
 from unittest.mock import patch
 
+from az_scout.plugin_api import PluginError
 from fastapi import FastAPI
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
 from az_scout_avs_sku.routes import router
@@ -8,6 +11,14 @@ from az_scout_avs_sku.routes import router
 
 def _build_client() -> TestClient:
     app = FastAPI()
+
+    @app.exception_handler(PluginError)
+    async def _plugin_error_handler(_request: Request, exc: PluginError) -> JSONResponse:
+        return JSONResponse(
+            {"error": str(exc), "detail": str(exc)},
+            status_code=exc.status_code,
+        )
+
     app.include_router(router, prefix="/plugins/avs-sku")
     return TestClient(app)
 

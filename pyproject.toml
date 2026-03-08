@@ -9,7 +9,7 @@ description = "Azure VMware Solution (AVS) SKU exploration plugin for az-scout"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "az-scout>=2026.3.2",
+    "az-scout>=2026.3.4",
     "fastapi",
     "requests>=2.28",
 ]
