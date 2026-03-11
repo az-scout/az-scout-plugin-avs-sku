@@ -1,13 +1,6 @@
 # az-scout-plugin-avs-sku
 
-[**az-scout**](https://azscout.vupti.me) plugin for Azure VMware Solution (AVS) SKU exploration.
-
-It adds:
-
-- an AVS SKU UI tab in az-scout,
-- a REST API route that returns technical SKU data and optional regional pricing,
-- an MCP tool for AI/chat workflows,
-- an AVS-focused chat mode.
+[az-scout](https://az-scout.com) plugin for Azure VMware Solution (AVS) SKU exploration.
 
 ## Plugin role
 
@@ -102,12 +95,21 @@ Tool name: `avs_sku_tool`
 ## Setup
 
 ```bash
-uv sync --group dev
-uv pip install -e .
-az-scout
+uv pip install az-scout-plugin-avs-sku
+az-scout  # plugin is auto-discovered
 ```
 
-## Project structure
+For development:
+
+```bash
+git clone https://github.com/az-scout/az-scout-plugin-avs-sku
+cd az-scout-plugin-avs-sku
+uv sync --group dev
+uv pip install -e .
+az-scout  # plugin is auto-discovered
+```
+
+## Structure
 
 ```
 src/az_scout_avs_sku/
@@ -116,12 +118,9 @@ src/az_scout_avs_sku/
 ├── routes.py
 ├── tools.py
 └── static/
-        ├── css/avs-sku.css
-        ├── html/avs-sku-tab.html
-        └── js/avs-sku-tab.js
-tests/
-├── test_routes.py
-└── test_tools.py
+    ├── css/avs-sku.css
+    ├── html/avs-sku-tab.html
+    └── js/avs-sku-tab.js
 ```
 
 ## Quality checks
@@ -133,10 +132,15 @@ uv run mypy src/
 uv run pytest
 ```
 
+## Copilot support
+
+The `.github/copilot-instructions.md` file provides context to GitHub Copilot about
+the plugin structure, conventions, and az-scout plugin API.
+
 ## License
 
 [MIT](LICENSE.txt)
 
 ## Disclaimer
 
-> **This tool is not affiliated with Microsoft.** SKU, pricing, and availability information is indicative and can change. Always validate final sizing, generation availability, and cost in official Microsoft sources and in your target tenant/subscription before deployment.
+> **This tool is not affiliated with Microsoft.** All capacity, pricing, and availability information is indicative and not a guarantee of deployment success. Values are dynamic and may change between planning and actual deployment. Always validate in official Microsoft sources and in your target tenant/subscription.
