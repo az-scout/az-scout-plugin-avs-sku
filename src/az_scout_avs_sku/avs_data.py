@@ -41,6 +41,11 @@ GENERATION2_AV64_REGIONS = {
     "ukwest",
     "westus2",
 }
+STRETCHED_CLUSTER_REGIONS: dict[str, set[str]] = {
+    "AV36": {"uksouth", "westeurope"},
+    "AV36P": {"uksouth", "westeurope", "australiaeast", "eastus"},
+    "AV48": {"germanywestcentral"},
+}
 
 _sku_cache: tuple[datetime, list[dict[str, Any]]] | None = None
 _prices_cache: dict[tuple[str, bool, str, str], tuple[datetime, dict[str, dict[str, Any]]]] = {}
@@ -87,6 +92,11 @@ def _get_generation_labels(sku_name: str, region: str) -> list[str]:
         return labels
 
     return ["Generation 1"]
+
+
+def _supports_stretched_cluster(sku_name: str, region: str) -> bool:
+    regions = STRETCHED_CLUSTER_REGIONS.get(sku_name.strip().upper(), set())
+    return _normalize_region_key(region) in regions
 
 
 def get_avs_sku_technical_data() -> list[dict[str, Any]]:
@@ -378,11 +388,16 @@ def get_avs_skus_for_region(
         price_data = price_index.get(sku_name)
         price_found = any((price_data or {}).get(mode) is not None for mode in PRICE_MODES)
 
+        stretched = (
+            _supports_stretched_cluster(sku_name, normalized_region) if normalized_region else None
+        )
+
         rows.append(
             {
                 "name": sku_name,
                 "technical": technical_data,
                 "generation_labels": generation_labels,
+                "stretched_cluster": stretched,
                 "available_in_region": price_found if normalized_region else None,
                 "price": {
                     "found": price_found,

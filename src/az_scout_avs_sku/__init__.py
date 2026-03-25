@@ -86,8 +86,15 @@ class AvsSkuPlugin:
                     "A SKU with available_in_region=false (no pricing data) "
                     "is NOT available in that region — do not recommend it. "
                     "Only present SKUs that are available_in_region=true. "
+                    "Stretched Clusters are AVS SDDCs that leverage Azure region "
+                    "Availability Zone support to provide High Availability and very "
+                    "low RTO to replicated workloads. "
+                    "The stretched_cluster field indicates whether a SKU supports "
+                    "Stretched Clusters in the queried region. "
                     "Call out uncertainty when availability may have changed "
                     "and recommend checking official Microsoft docs."
+                    "Be concise (important) but informative,"
+                    "and use bullet points or tables for comparisons when helpful."
                 ),
                 welcome_message=(
                     "Ask me about AVS SKU sizing, generation compatibility, "
@@ -113,7 +120,10 @@ class AvsSkuPlugin:
             "pricing source selected by the user: 'Use public prices list' or "
             "'Use selected subscription'. "
             "A SKU with available_in_region=false (no pricing data) is NOT available "
-            "in that region — do not recommend it."
+            "in that region — do not recommend it. "
+            "Stretched Clusters are AVS SDDCs using Azure region Availability Zone "
+            "support for High Availability and very low RTO. "
+            "The stretched_cluster field indicates regional support."
         )
 
 
