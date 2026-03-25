@@ -61,6 +61,7 @@ Base path (mounted by az-scout):
             "name": "AV64",
             "technical": { "...": "..." },
             "generation_labels": ["Generation 1", "Generation 2"],
+            "available_in_region": true,
             "price": {
                 "found": true,
                 "byol": true,

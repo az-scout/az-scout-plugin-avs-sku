@@ -376,14 +376,16 @@ def get_avs_skus_for_region(
             technical_data["vsan_architecture"] = "OSA or ESA"
 
         price_data = price_index.get(sku_name)
+        price_found = any((price_data or {}).get(mode) is not None for mode in PRICE_MODES)
 
         rows.append(
             {
                 "name": sku_name,
                 "technical": technical_data,
                 "generation_labels": generation_labels,
+                "available_in_region": price_found if normalized_region else None,
                 "price": {
-                    "found": any((price_data or {}).get(mode) is not None for mode in PRICE_MODES),
+                    "found": price_found,
                     "byol": byol,
                     **(price_data or {}),
                 },
