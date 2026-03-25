@@ -12,6 +12,7 @@ from az_scout_avs_sku.avs_data import (
     _build_price_index,
     _fetch_subscription_price_sheet,
     _prices_cache,
+    _supports_stretched_cluster,
 )
 
 # ---------------------------------------------------------------------------
@@ -238,3 +239,29 @@ def test_build_price_index_skips_subscription_for_public(
 
     mock_apply_sub.assert_not_called()
     assert result["AV36"]["payg_hour"] == 10.0
+
+
+# ---------------------------------------------------------------------------
+# _supports_stretched_cluster
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("sku", "region", "expected"),
+    [
+        ("AV36", "uksouth", True),
+        ("AV36", "westeurope", True),
+        ("AV36", "eastus", False),
+        ("AV36P", "uksouth", True),
+        ("AV36P", "australiaeast", True),
+        ("AV36P", "eastus", True),
+        ("AV36P", "westus2", False),
+        ("AV48", "germanywestcentral", True),
+        ("AV48", "eastus", False),
+        ("AV52", "uksouth", False),
+        ("AV64", "eastus", False),
+        ("av36p", "UKSouth", True),  # case-insensitive
+    ],
+)
+def test_supports_stretched_cluster(sku: str, region: str, expected: bool) -> None:
+    assert _supports_stretched_cluster(sku, region) is expected

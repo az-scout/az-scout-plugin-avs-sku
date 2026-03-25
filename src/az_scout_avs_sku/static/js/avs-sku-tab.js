@@ -253,8 +253,12 @@
                             return `<span class="avs-sku-generation-badge ${generationClass}">${label}</span>`;
                         })
                         .join("");
-                    const generationRowMarkup = generationMarkup
-                        ? `<div class="avs-sku-generation-row">${generationMarkup}</div>`
+                    const stretchedBadge = item.stretched_cluster
+                        ? '<span class="avs-sku-generation-badge avs-sku-stretched-badge">Stretched Cluster</span>'
+                        : "";
+                    const badgesMarkup = generationMarkup + stretchedBadge;
+                    const generationRowMarkup = badgesMarkup
+                        ? `<div class="avs-sku-generation-row">${badgesMarkup}</div>`
                         : "";
                     return `
                     <article class="avs-sku-card-item${unavailableClass}">
