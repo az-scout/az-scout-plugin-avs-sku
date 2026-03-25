@@ -83,6 +83,9 @@ class AvsSkuPlugin:
                     "for the same queried region. "
                     "If no such SKU exists (or tool data is missing/unclear), "
                     "say so explicitly and do not guess alternatives. "
+                    "A SKU with available_in_region=false (no pricing data) "
+                    "is NOT available in that region — do not recommend it. "
+                    "Only present SKUs that are available_in_region=true. "
                     "Call out uncertainty when availability may have changed "
                     "and recommend checking official Microsoft docs."
                 ),
@@ -108,7 +111,9 @@ class AvsSkuPlugin:
             "and do not infer from CPU model or vSAN architecture. "
             "When suggesting alternatives, keep them in the same region and use the same "
             "pricing source selected by the user: 'Use public prices list' or "
-            "'Use selected subscription'."
+            "'Use selected subscription'. "
+            "A SKU with available_in_region=false (no pricing data) is NOT available "
+            "in that region — do not recommend it."
         )
 
 
