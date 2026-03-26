@@ -6,7 +6,7 @@
 
 This plugin helps compare AVS SKUs by combining:
 
-- **technical specs** (CPU, RAM, cores, architecture, vSAN) from upstream SKU metadata,
+- **technical specs** (CPU, RAM, cores, architecture, vSAN) bundled as static data,
 - **regional retail pricing** (PAYG and reservation monthly equivalents),
 - **generation labels** (Generation 1 / Generation 2 when applicable by region).
 
@@ -16,7 +16,7 @@ This plugin helps compare AVS SKUs by combining:
 - **Pricing scope selector**: public prices list, or selected subscription scope.
 - **AVS generation awareness**.
 - **Chat integration**:
-  - MCP tool: `avs_sku_tool`
+  - MCP tools: `avs_sku_tool`, `avs_sku_technical_data_tool`
   - custom chat mode: `avs-sku-advisor`
   - default-mode addendum for AV* SKU interpretation.
 
@@ -26,9 +26,36 @@ Base path (mounted by az-scout):
 
 `/plugins/avs-sku`
 
-### Endpoint
+### Endpoints
 
-`GET /plugins/avs-sku/skus`
+#### `GET /plugins/avs-sku/technical-skus`
+
+Returns the raw AVS SKU technical specifications (no pricing, no region context).
+
+**Response shape:**
+
+```json
+[
+    {
+        "name": "AV36",
+        "cores": 36,
+        "ram": 576,
+        "cpu_model": "Intel Xeon Gold 6140",
+        "cpu_architecture": "Skylake",
+        "cpu_speed_ghz": 2.3,
+        "cpu_turbo_speed_ghz": 3.7,
+        "cpu_number": 2,
+        "logical_threads_with_hyperthreading": 72,
+        "vsan_architecture": "OSA",
+        "vsan_cache_capacity_in_tb": 3.2,
+        "vsan_cache_storage_technology": "NVMe",
+        "vsan_capacity_tier_in_tb": 15.2,
+        "vsan_capacity_tier_storage_technology": "SSD"
+    }
+]
+```
+
+#### `GET /plugins/avs-sku/skus`
 
 ### Query parameters
 
@@ -53,7 +80,7 @@ Base path (mounted by az-scout):
     "pricing_source": "public",
     "subscription_id": "",
     "source": {
-        "technical": "https://.../sku.json",
+        "technical": "bundled (az-scout-plugin-avs-sku)",
         "pricing": "https://prices.azure.com/api/retail/prices"
     },
     "items": [
@@ -78,9 +105,13 @@ Base path (mounted by az-scout):
 }
 ```
 
-## MCP tool
+## MCP tools
 
-Tool name: `avs_sku_tool`
+### `avs_sku_technical_data_tool`
+
+Returns AVS SKU technical specifications (CPU, RAM, vSAN) as a JSON string. No parameters.
+
+### `avs_sku_tool`
 
 ### Parameters
 
@@ -121,6 +152,7 @@ src/az_scout_avs_sku/
 ├── tools.py
 └── static/
     ├── css/avs-sku.css
+    ├── data/sku.json
     ├── html/avs-sku-tab.html
     └── js/avs-sku-tab.js
 ```
@@ -138,6 +170,44 @@ uv run pytest
 
 The `.github/copilot-instructions.md` file provides context to GitHub Copilot about
 the plugin structure, conventions, and az-scout plugin API.
+
+## Using AVS SKU data from another plugin
+
+Other az-scout plugins can consume AVS SKU technical data by adding this plugin as a dependency.
+
+### 1. Add the dependency
+
+In your plugin's `pyproject.toml`:
+
+```toml
+[project]
+dependencies = [
+    "az-scout>=2026.3.4",
+    "az-scout-plugin-avs-sku",
+    # ...
+]
+```
+
+### 2. Import directly (recommended for backend code)
+
+```python
+from az_scout_avs_sku.avs_data import get_avs_sku_technical_data
+
+skus = get_avs_sku_technical_data()
+# Returns: list[dict[str, Any]] — the full list of AVS SKU specs
+```
+
+### 3. Call the API endpoint (recommended for frontend code)
+
+```javascript
+const response = await fetch("/plugins/avs-sku/technical-skus");
+const skus = await response.json();
+// Returns: array of SKU objects
+```
+
+### 4. Use the MCP tool (for AI chat integrations)
+
+The `avs_sku_technical_data_tool` is automatically available in the AI chat when both plugins are installed.
 
 ## License
 

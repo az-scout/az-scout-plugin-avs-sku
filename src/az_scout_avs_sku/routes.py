@@ -1,11 +1,19 @@
 """API routes for AVS SKU and pricing data."""
 
+from typing import Any
+
 from az_scout.plugin_api import PluginUpstreamError, PluginValidationError
 from fastapi import APIRouter
 
-from az_scout_avs_sku.avs_data import get_avs_skus_for_region
+from az_scout_avs_sku.avs_data import get_avs_sku_technical_data, get_avs_skus_for_region
 
 router = APIRouter()
+
+
+@router.get("/technical-skus")
+async def technical_skus() -> list[dict[str, Any]]:
+    """Return raw AVS SKU technical specifications (no pricing, no region context)."""
+    return get_avs_sku_technical_data()
 
 
 @router.get("/skus")

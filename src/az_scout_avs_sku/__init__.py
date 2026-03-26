@@ -41,9 +41,9 @@ class AvsSkuPlugin:
 
     def get_mcp_tools(self) -> list[Callable[..., Any]] | None:
         """Return MCP tool functions, or None to skip."""
-        from az_scout_avs_sku.tools import avs_sku_tool
+        from az_scout_avs_sku.tools import avs_sku_technical_data_tool, avs_sku_tool
 
-        return [avs_sku_tool]
+        return [avs_sku_tool, avs_sku_technical_data_tool]
 
     def get_static_dir(self) -> Path | None:
         """Return path to static assets directory, or None to skip."""

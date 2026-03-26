@@ -16,11 +16,16 @@ This is an **az-scout plugin** — a Python package that extends [az-scout](http
 ```
 src/az_scout_avs_sku/
 ├── __init__.py          # Plugin class + module-level `plugin` instance
+├── _log.py              # Logger helper
+├── _version.py          # Auto-generated version (hatch-vcs)
+├── avs_data.py          # SKU technical data loader + pricing aggregation
 ├── routes.py            # FastAPI APIRouter (mounted at /plugins/avs-sku/)
 ├── tools.py             # MCP tool functions (exposed on the az-scout MCP server)
 └── static/
     ├── css/
     │   └── avs-sku.css      # Plugin styles (auto-loaded via css_entry)
+    ├── data/
+    │   └── sku.json         # Bundled AVS SKU technical specifications
     ├── html/
     │   └── avs-sku-tab.html # HTML fragment (fetched by JS at runtime)
     └── js/
