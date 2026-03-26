@@ -13,6 +13,7 @@ from az_scout_avs_sku.avs_data import (
     _fetch_subscription_price_sheet,
     _prices_cache,
     _supports_stretched_cluster,
+    get_avs_sku_technical_data,
 )
 
 # ---------------------------------------------------------------------------
@@ -265,3 +266,35 @@ def test_build_price_index_skips_subscription_for_public(
 )
 def test_supports_stretched_cluster(sku: str, region: str, expected: bool) -> None:
     assert _supports_stretched_cluster(sku, region) is expected
+
+
+# ---------------------------------------------------------------------------
+# get_avs_sku_technical_data – bundled file loading
+# ---------------------------------------------------------------------------
+
+
+def test_get_avs_sku_technical_data_returns_sorted_list() -> None:
+    import az_scout_avs_sku.avs_data as _mod
+
+    _mod._sku_cache = None  # force reload
+
+    result = get_avs_sku_technical_data()
+
+    assert isinstance(result, list)
+    assert len(result) >= 5
+    names = [sku["name"] for sku in result]
+    assert names == sorted(names)
+    assert "AV36" in names
+    assert "AV64" in names
+
+
+def test_get_avs_sku_technical_data_items_have_expected_fields() -> None:
+    import az_scout_avs_sku.avs_data as _mod
+
+    _mod._sku_cache = None
+
+    result = get_avs_sku_technical_data()
+
+    expected_keys = {"name", "cores", "ram", "cpu_model", "vsan_architecture"}
+    for sku in result:
+        assert expected_keys.issubset(sku.keys()), f"Missing keys in {sku['name']}"

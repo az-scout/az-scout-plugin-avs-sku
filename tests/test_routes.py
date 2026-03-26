@@ -23,6 +23,23 @@ def _build_client() -> TestClient:
     return TestClient(app)
 
 
+def test_technical_skus_route_returns_list() -> None:
+    tech_data = [
+        {"name": "AV36", "cores": 36, "ram": 576},
+        {"name": "AV64", "cores": 64, "ram": 1024},
+    ]
+
+    with patch(
+        "az_scout_avs_sku.routes.get_avs_sku_technical_data", return_value=tech_data
+    ) as mocked:
+        client = _build_client()
+        response = client.get("/plugins/avs-sku/technical-skus")
+
+    assert response.status_code == 200
+    assert response.json() == tech_data
+    mocked.assert_called_once()
+
+
 def test_skus_route_returns_payload() -> None:
     payload = {
         "region": "eastus",

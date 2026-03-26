@@ -3,7 +3,17 @@
 import json
 from typing import Any
 
-from az_scout_avs_sku.avs_data import get_avs_skus_for_region
+from az_scout_avs_sku.avs_data import get_avs_sku_technical_data, get_avs_skus_for_region
+
+
+def avs_sku_technical_data_tool() -> str:
+    """Get AVS SKU technical specifications (CPU, RAM, vSAN) without pricing or region context.
+
+    Returns the full list of known AVS SKU hardware specs. Useful for sizing
+    calculations, comparisons, and as input data for other tools or plugins.
+    """
+    data: list[dict[str, Any]] = get_avs_sku_technical_data()
+    return json.dumps(data, ensure_ascii=False)
 
 
 def avs_sku_tool(

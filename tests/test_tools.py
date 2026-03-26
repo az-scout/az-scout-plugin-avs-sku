@@ -1,7 +1,23 @@
 import json
 from unittest.mock import patch
 
-from az_scout_avs_sku.tools import avs_sku_tool
+from az_scout_avs_sku.tools import avs_sku_technical_data_tool, avs_sku_tool
+
+
+def test_avs_sku_technical_data_tool_returns_json() -> None:
+    tech_data = [
+        {"name": "AV36", "cores": 36, "ram": 576},
+        {"name": "AV64", "cores": 64, "ram": 1024},
+    ]
+
+    with patch(
+        "az_scout_avs_sku.tools.get_avs_sku_technical_data", return_value=tech_data
+    ) as mocked:
+        result = avs_sku_technical_data_tool()
+
+    assert isinstance(result, str)
+    assert json.loads(result) == tech_data
+    mocked.assert_called_once()
 
 
 def test_avs_sku_tool_returns_json_string_payload() -> None:

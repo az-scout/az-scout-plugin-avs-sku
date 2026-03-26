@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
@@ -12,10 +14,7 @@ from az_scout.azure_api import AZURE_MGMT_URL, ArmNotFoundError, arm_get
 
 from az_scout_avs_sku._log import logger
 
-SKU_DATA_URL = (
-    "https://raw.githubusercontent.com/lrivallain/"
-    "avs-rvtools-analyzer/master/avs_rvtools_analyzer/static/sku.json"
-)
+_SKU_DATA_PATH = Path(__file__).parent / "static" / "data" / "sku.json"
 AZURE_PRICES_BASE_URL = "https://prices.azure.com/api/retail/prices"
 REQUEST_TIMEOUT_SECONDS = 20
 CACHE_TTL = timedelta(minutes=30)
@@ -100,15 +99,17 @@ def _supports_stretched_cluster(sku_name: str, region: str) -> bool:
 
 
 def get_avs_sku_technical_data() -> list[dict[str, Any]]:
-    """Return AVS SKU technical metadata from the upstream JSON source."""
+    """Return AVS SKU technical metadata from the bundled JSON data file."""
     global _sku_cache
 
     if _sku_cache and _is_cache_fresh(_sku_cache[0]):
         return _sku_cache[1]
 
-    payload = _http_get_json(SKU_DATA_URL)
+    with open(_SKU_DATA_PATH, encoding="utf-8") as fh:
+        payload = json.load(fh)
+
     if not isinstance(payload, list):
-        msg = "Unexpected AVS SKU data format from upstream source"
+        msg = "Unexpected AVS SKU data format in bundled data file"
         raise ValueError(msg)
 
     normalized: list[dict[str, Any]] = []
@@ -426,7 +427,7 @@ def get_avs_skus_for_region(
         "pricing_source": normalized_pricing_source,
         "subscription_id": normalized_subscription_id,
         "source": {
-            "technical": SKU_DATA_URL,
+            "technical": "bundled (az-scout-plugin-avs-sku)",
             "pricing": AZURE_PRICES_BASE_URL if normalized_region else None,
         },
         "items": rows,
