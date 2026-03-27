@@ -10,10 +10,8 @@ from importlib.metadata import version as _pkg_version
 from pathlib import Path
 from typing import Any
 
-from az_scout.plugin_api import ChatMode, TabDefinition, get_plugin_logger
+from az_scout.plugin_api import ChatMode, TabDefinition
 from fastapi import APIRouter
-
-logger = get_plugin_logger("avs-sku")
 
 _STATIC_DIR = Path(__file__).parent / "static"
 

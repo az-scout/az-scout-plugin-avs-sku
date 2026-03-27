@@ -11,13 +11,13 @@ router = APIRouter()
 
 
 @router.get("/technical-skus")
-async def technical_skus() -> list[dict[str, Any]]:
+def technical_skus() -> list[dict[str, Any]]:
     """Return raw AVS SKU technical specifications (no pricing, no region context)."""
     return get_avs_sku_technical_data()
 
 
 @router.get("/skus")
-async def skus(
+def skus(
     region: str = "",
     byol: bool = True,
     sku: str = "",
