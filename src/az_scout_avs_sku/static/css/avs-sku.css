@@ -21,7 +21,6 @@
 }
 
 .avs-sku-card-unavailable {
-    opacity: 1;
     background: var(--bs-tertiary-bg);
     border-color: var(--bs-secondary-color);
     opacity: .2;
