@@ -29,14 +29,18 @@ PRICE_MODES = (
 )
 GENERATION2_AV64_REGIONS = {
     "australiaeast",
+    "brazilsouth",
     "eastus",
+    "francecentral",
     "canadacentral",
     "canadaeast",
     "centralus",
     "malaysiawest",
     "northeurope",
+    "northcentralus",
     "norwayeast",
     "switzerlandnorth",
+    "switzerlandwest",
     "ukwest",
     "westus2",
 }
