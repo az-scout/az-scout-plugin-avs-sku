@@ -267,6 +267,7 @@ def _build_price_index(
         if cached and _is_cache_fresh(cached[0]):
             return cached[1]
 
+    # Fetch data outside the lock to avoid blocking other threads during network I/O.
     items = _fetch_regional_price_items(region)
 
     if pricing_source == "subscription" and subscription_id:
@@ -356,7 +357,13 @@ def _build_price_index(
         price_data.pop("_effective", None)
 
     with _prices_cache_lock:
-        _prices_cache[cache_key] = (datetime.now(UTC), prices_by_sku)
+        # Double-check: a concurrent thread may have already populated the cache
+        # while we were computing; only write if the entry is still absent or stale.
+        existing = _prices_cache.get(cache_key)
+        if not existing or not _is_cache_fresh(existing[0]):
+            _prices_cache[cache_key] = (datetime.now(UTC), prices_by_sku)
+        else:
+            prices_by_sku = existing[1]
     return prices_by_sku
 
 
