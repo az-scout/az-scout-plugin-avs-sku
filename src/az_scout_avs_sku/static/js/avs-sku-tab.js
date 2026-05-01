@@ -6,6 +6,18 @@
     if (!container) return;
 
     // -----------------------------------------------------------------------
+    // 0. HTML-escape helper (prevents XSS when interpolating into innerHTML)
+    // -----------------------------------------------------------------------
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    // -----------------------------------------------------------------------
     // 1. Load HTML fragment
     // -----------------------------------------------------------------------
     fetch(`/plugins/${PLUGIN_NAME}/static/html/avs-sku-tab.html`)
@@ -15,7 +27,7 @@
             initAvsSkuPlugin();
         })
         .catch(err => {
-            container.innerHTML = `<div class="alert alert-danger">Failed to load plugin UI: ${err.message}</div>`;
+            container.innerHTML = `<div class="alert alert-danger">Failed to load plugin UI: ${escapeHtml(err.message)}</div>`;
         });
 
     // -----------------------------------------------------------------------
@@ -250,7 +262,7 @@
                             const generationClass = label === "Generation 2"
                                 ? "avs-sku-generation-badge-gen2"
                                 : "avs-sku-generation-badge-gen1";
-                            return `<span class="avs-sku-generation-badge ${generationClass}">${label}</span>`;
+                            return `<span class="avs-sku-generation-badge ${generationClass}">${escapeHtml(label)}</span>`;
                         })
                         .join("");
                     const stretchedBadge = item.stretched_cluster
@@ -264,18 +276,18 @@
                     <article class="avs-sku-card-item${unavailableClass}">
                         <div class="avs-sku-card-header">
                             <div class="avs-sku-title-wrap">
-                                <h6 class="mb-0">${item.name}</h6>
+                                <h6 class="mb-0">${escapeHtml(item.name)}</h6>
                                 ${generationRowMarkup}
                             </div>
-                            <span class="avs-sku-price ${priceClass}">${formatPrice(price, mode)}</span>
+                            <span class="avs-sku-price ${priceClass}">${escapeHtml(formatPrice(price, mode))}</span>
                         </div>
                         <div class="avs-sku-specs">
-                            <div><span>Cores</span><strong>${formatNumber(t.cores)}</strong></div>
-                            <div><span>RAM (GB)</span><strong>${formatNumber(t.ram)}</strong></div>
-                            <div><span>CPU</span><strong>${t.cpu_model || "—"}</strong></div>
-                            <div><span>Arch</span><strong>${t.cpu_architecture || "—"}</strong></div>
-                            <div><span>vSAN</span><strong>${t.vsan_architecture || "—"}</strong></div>
-                            <div><span>Capacity (TB)</span><strong>${formatNumber(t.vsan_capacity_tier_in_tb)}</strong></div>
+                            <div><span>Cores</span><strong>${escapeHtml(formatNumber(t.cores))}</strong></div>
+                            <div><span>RAM (GB)</span><strong>${escapeHtml(formatNumber(t.ram))}</strong></div>
+                            <div><span>CPU</span><strong>${escapeHtml(t.cpu_model || "—")}</strong></div>
+                            <div><span>Arch</span><strong>${escapeHtml(t.cpu_architecture || "—")}</strong></div>
+                            <div><span>vSAN</span><strong>${escapeHtml(t.vsan_architecture || "—")}</strong></div>
+                            <div><span>Capacity (TB)</span><strong>${escapeHtml(formatNumber(t.vsan_capacity_tier_in_tb))}</strong></div>
                         </div>
                     </article>
                 `;
@@ -332,7 +344,7 @@
                 currentItems = [];
                 cardsEl.innerHTML =
                     `<div class="alert alert-danger alert-dismissible fade show" role="alert" style="grid-column: 1 / -1;">` +
-                    `<strong>Error:</strong> ${e.message}` +
+                    `<strong>Error:</strong> ${escapeHtml(e.message)}` +
                     `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>` +
                     `</div>`;
                 statusEl.textContent = "";
