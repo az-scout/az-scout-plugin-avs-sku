@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -52,6 +53,8 @@ STRETCHED_CLUSTER_REGIONS: dict[str, set[str]] = {
 
 _sku_cache: tuple[datetime, list[dict[str, Any]]] | None = None
 _prices_cache: dict[tuple[str, bool, str, str], tuple[datetime, dict[str, dict[str, Any]]]] = {}
+_sku_cache_lock = threading.Lock()
+_prices_cache_lock = threading.Lock()
 
 
 def _http_get_json(url: str) -> dict[str, Any] | list[Any]:
@@ -106,28 +109,29 @@ def get_avs_sku_technical_data() -> list[dict[str, Any]]:
     """Return AVS SKU technical metadata from the bundled JSON data file."""
     global _sku_cache
 
-    if _sku_cache and _is_cache_fresh(_sku_cache[0]):
-        return _sku_cache[1]
+    with _sku_cache_lock:
+        if _sku_cache and _is_cache_fresh(_sku_cache[0]):
+            return _sku_cache[1]
 
-    with open(_SKU_DATA_PATH, encoding="utf-8") as fh:
-        payload = json.load(fh)
+        with open(_SKU_DATA_PATH, encoding="utf-8") as fh:
+            payload = json.load(fh)
 
-    if not isinstance(payload, list):
-        msg = "Unexpected AVS SKU data format in bundled data file"
-        raise ValueError(msg)
+        if not isinstance(payload, list):
+            msg = "Unexpected AVS SKU data format in bundled data file"
+            raise ValueError(msg)
 
-    normalized: list[dict[str, Any]] = []
-    for item in payload:
-        if not isinstance(item, dict):
-            continue
-        sku_name = str(item.get("name", "")).strip()
-        if not sku_name:
-            continue
-        normalized.append(item)
+        normalized: list[dict[str, Any]] = []
+        for item in payload:
+            if not isinstance(item, dict):
+                continue
+            sku_name = str(item.get("name", "")).strip()
+            if not sku_name:
+                continue
+            normalized.append(item)
 
-    normalized.sort(key=lambda sku: str(sku.get("name", "")))
-    _sku_cache = (datetime.now(UTC), normalized)
-    return normalized
+        normalized.sort(key=lambda sku: str(sku.get("name", "")))
+        _sku_cache = (datetime.now(UTC), normalized)
+        return normalized
 
 
 def _build_prices_filter(region: str) -> str:
@@ -258,9 +262,10 @@ def _build_price_index(
     subscription_id: str = "",
 ) -> dict[str, dict[str, Any]]:
     cache_key = (region, byol, pricing_source, subscription_id)
-    cached = _prices_cache.get(cache_key)
-    if cached and _is_cache_fresh(cached[0]):
-        return cached[1]
+    with _prices_cache_lock:
+        cached = _prices_cache.get(cache_key)
+        if cached and _is_cache_fresh(cached[0]):
+            return cached[1]
 
     items = _fetch_regional_price_items(region)
 
@@ -350,7 +355,8 @@ def _build_price_index(
     for price_data in prices_by_sku.values():
         price_data.pop("_effective", None)
 
-    _prices_cache[cache_key] = (datetime.now(UTC), prices_by_sku)
+    with _prices_cache_lock:
+        _prices_cache[cache_key] = (datetime.now(UTC), prices_by_sku)
     return prices_by_sku
 
 

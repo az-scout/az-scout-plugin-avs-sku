@@ -4,14 +4,17 @@ Adds Azure VMware Solution (AVS) SKU exploration with regional
 pricing, generation compatibility, and technical specifications.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from az_scout.plugin_api import ChatMode, TabDefinition
-from fastapi import APIRouter
+if TYPE_CHECKING:
+    from az_scout.plugin_api import ChatMode, TabDefinition
+    from fastapi import APIRouter
 
 _STATIC_DIR = Path(__file__).parent / "static"
 
@@ -49,6 +52,8 @@ class AvsSkuPlugin:
 
     def get_tabs(self) -> list[TabDefinition] | None:
         """Return UI tab definitions, or None to skip."""
+        from az_scout.plugin_api import TabDefinition
+
         return [
             TabDefinition(
                 id="avs-sku",
@@ -61,6 +66,8 @@ class AvsSkuPlugin:
 
     def get_chat_modes(self) -> list[ChatMode] | None:
         """Return chat mode definitions, or None to skip."""
+        from az_scout.plugin_api import ChatMode
+
         return [
             ChatMode(
                 id="avs-sku-advisor",
