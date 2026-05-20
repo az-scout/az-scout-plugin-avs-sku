@@ -40,6 +40,7 @@ GENERATION2_AV64_REGIONS = {
     "northeurope",
     "northcentralus",
     "norwayeast",
+    "qatarcentral",
     "switzerlandnorth",
     "switzerlandwest",
     "ukwest",
