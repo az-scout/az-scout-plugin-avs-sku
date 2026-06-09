@@ -30,6 +30,7 @@ PRICE_MODES = (
 )
 GENERATION2_AV64_REGIONS = {
     "australiaeast",
+    "belgiumcentral",
     "brazilsouth",
     "eastus",
     "francecentral",
@@ -41,6 +42,7 @@ GENERATION2_AV64_REGIONS = {
     "northcentralus",
     "norwayeast",
     "qatarcentral",
+    "southeastasia",
     "switzerlandnorth",
     "switzerlandwest",
     "ukwest",
